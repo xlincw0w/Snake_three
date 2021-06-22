@@ -1,0 +1,11 @@
+.env
+
+/node_modules
+/dist
+/build
+/src/Tailwind
+
+
+yarn-error.log
+package-lock.json
+yarn.lock
