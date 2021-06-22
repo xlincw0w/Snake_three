@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
-const Score = ({ score }) => {
-    return <p style={{ fontSize: '1.5rem', color: 'white', marginLeft: '3rem' }}>{score}</p>
-}
+// const Score = ({ score }) => {
+//     return <p style={{ fontSize: '1.5rem', color: 'white', marginLeft: '3rem' }}>{score}</p>
+// }
 
 const Main = () => {
     const threeRoot = React.createRef()
@@ -171,8 +171,23 @@ const Main = () => {
     return (
         <div>
             <div style={{ position: 'absolute', left: '2%', top: '3%' }}>
-                <p style={{ fontSize: '1rem', color: '#cccccc' }}>Khazem Khaled</p>
                 {/* <Score score={score_toshow} /> */}
+                <div>
+                    <p style={{ fontSize: '1rem', color: '#cccccc' }}>Created by Khazem Khaled</p>
+                </div>
+                <div style={{ background: '#eeeeee', marginTop: '1rem', textAlign: 'center', paddingTop: '0.6rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <p className='mx-auto' style={{ fontSize: '1rem', color: '#222222' }}>
+                        How to play
+                    </p>
+                    <div style={{ marginTop: '1rem' }}>
+                        <p style={{ fontSize: '0.8rem', color: '#222222' }}>Up</p>
+                        <p style={{ fontSize: '0.8rem', color: '#222222' }}>Left Down Right</p>
+                    </div>
+                    <div style={{ marginTop: '1rem', paddingBottom: '1.5rem' }}>
+                        <p style={{ fontSize: '1rem', color: '#222222' }}>Z</p>
+                        <p style={{ fontSize: '1rem', color: '#222222' }}>Q S D</p>
+                    </div>
+                </div>
             </div>
             {gameover && (
                 <div style={{ position: 'absolute', width: '100vw', textAlign: 'center' }}>
