@@ -1,25 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
+const Score = ({ score }) => {
+    return <p style={{ fontSize: '1.5rem', color: 'white', marginLeft: '3rem' }}>{score}</p>
+}
+
 const Main = () => {
     const threeRoot = React.createRef()
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer()
+    let renderer = new THREE.WebGLRenderer()
 
     const geometry = new THREE.BoxGeometry(0.5, 0.5, 0)
+    const food_mat = new THREE.MeshBasicMaterial({ color: 0xff0000 })
     const snake_mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
     const snake = new THREE.Mesh(geometry, snake_mat)
 
     const snake_speed = 0.1
     const tail_speed = 0.15
     const keypressed = {}
+    const [gameover, setGameOver] = useState(false)
 
     let score = 0
-    const [score_toshow, setScore] = useState(0)
+    // const [score_toshow, setScore] = useState(0)
 
-    let foods = []
+    let actual_food = null
     let tails = []
 
     const Generate_Tail = () => {
@@ -27,20 +33,20 @@ const Main = () => {
         const tail = new THREE.Mesh(geometry, tail_mat)
 
         if (keypressed['d']) {
-            tail.position.x = snake.position.x - 0.1 * (score + 1)
+            tail.position.x = snake.position.x - 0.5 * (score + 1)
             tail.position.y = snake.position.y
         }
         if (keypressed['q']) {
-            tail.position.x = snake.position.x + 0.1 * (score + 1)
+            tail.position.x = snake.position.x + 0.5 * (score + 1)
             tail.position.y = snake.position.y
         }
         if (keypressed['z']) {
-            tail.position.x = snake.position.x - 0.1 * (score + 1)
-            tail.position.y = snake.position.y
+            tail.position.x = snake.position.x
+            tail.position.y = snake.position.y - 0.5 * (score + 1)
         }
         if (keypressed['s']) {
-            tail.position.x = snake.position.x - 0.1 * (score + 1)
-            tail.position.y = snake.position.y
+            tail.position.x = snake.position.x
+            tail.position.y = snake.position.y + 0.5 * (score + 1)
         }
 
         tails.push(tail)
@@ -49,67 +55,78 @@ const Main = () => {
     }
 
     const Generate_Food = () => {
-        const food_mat = new THREE.MeshBasicMaterial({ color: 0xff0000 })
         const food = new THREE.Mesh(geometry, food_mat)
 
-        const food_x = Math.floor(Math.random() * 28) - 14
+        const food_x = Math.floor(Math.random() * 24) - 12
         const food_y = Math.floor(Math.random() * 14) - 7
 
         food.position.x = food_x
         food.position.y = food_y
 
-        foods.push(food)
+        actual_food = food
 
         scene.add(food)
     }
 
     const Check_Collision = () => {
-        foods.map((elem, index) => {
-            if (snake.position.distanceTo(elem.position) < 0.5) {
-                scene.remove(elem)
-                foods.splice(index, 1)
+        if (snake.position.distanceTo(actual_food.position) < 0.5) {
+            actual_food.geometry.dispose()
+            actual_food.material.dispose()
 
-                Generate_Food()
-                Generate_Tail()
+            scene.remove(actual_food)
 
-                score++
-                setScore(score)
-            }
-        })
+            Generate_Food()
+            Generate_Tail()
+
+            score++
+            // setScore(score)
+        } else {
+            tails.map((elem) => {
+                if (snake.position.distanceTo(elem.position) < 0.2) {
+                    setGameOver(true)
+                    renderer = null
+                }
+            })
+        }
     }
 
     renderer.setSize(window.innerWidth, window.innerHeight)
 
     const animate = function () {
-        setTimeout(() => {
-            requestAnimationFrame(animate)
-            if (keypressed['d']) {
-                snake.position.x += snake_speed
-            }
-            if (keypressed['q']) {
-                snake.position.x -= snake_speed
-            }
-            if (keypressed['z']) {
-                snake.position.y += snake_speed
-            }
-            if (keypressed['s']) {
-                snake.position.y -= snake_speed
-            }
+        setTimeout(() => requestAnimationFrame(animate), 1000 / 60)
 
-            for (let i = 1; i < score; i++) {
+        if (keypressed['d']) {
+            snake.position.x += snake_speed
+        }
+        if (keypressed['q']) {
+            snake.position.x -= snake_speed
+        }
+        if (keypressed['z']) {
+            snake.position.y += snake_speed
+        }
+        if (keypressed['s']) {
+            snake.position.y -= snake_speed
+        }
+
+        for (let i = 1; i < score; i++) {
+            if (tails[i].position.distanceTo(tails[i - 1].position) > 0.6) {
                 tails[i].position.x -= (tails[i].position.x - tails[i - 1].position.x) * tail_speed
                 tails[i].position.y -= (tails[i].position.y - tails[i - 1].position.y) * tail_speed
             }
+        }
 
-            if (score >= 1) {
-                tails[0].position.x -= (tails[0].position.x - snake.position.x) * tail_speed
-                tails[0].position.y -= (tails[0].position.y - snake.position.y) * tail_speed
+        if (score >= 1) {
+            if (snake.position.distanceTo(tails[0].position) > 0.6) {
+                tails[0].position.x += (snake.position.x - tails[0].position.x) * tail_speed
+                tails[0].position.y += (snake.position.y - tails[0].position.y) * tail_speed
             }
+        }
 
-            Check_Collision()
-        }, 1000 / 60)
+        Check_Collision()
 
-        renderer.render(scene, camera)
+        if (renderer) {
+            renderer.render(scene, camera)
+        }
     }
 
     useEffect(() => {
@@ -152,12 +169,17 @@ const Main = () => {
     document.addEventListener('keyup', handleKeyOff, false)
 
     return (
-        <div className='text-red-400'>
+        <div>
             <div style={{ position: 'absolute', left: '2%', top: '3%' }}>
-                <p style={{ fontSize: '1rem', color: 'white' }}>Khazem Khaled</p>
-                <p style={{ fontSize: '1.5rem', color: 'white', marginLeft: '3rem' }}>{score_toshow}</p>
+                <p style={{ fontSize: '1rem', color: '#cccccc' }}>Khazem Khaled</p>
+                {/* <Score score={score_toshow} /> */}
             </div>
-            <div ref={threeRoot}></div>
+            {gameover && (
+                <div style={{ position: 'absolute', width: '100vw', textAlign: 'center' }}>
+                    <p style={{ color: '#cccccc', fontSize: '4rem' }}>Vous avez perdu.</p>
+                </div>
+            )}
+            <div ref={threeRoot} id='threeRoot'></div>
         </div>
     )
 }
