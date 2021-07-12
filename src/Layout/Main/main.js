@@ -95,6 +95,8 @@ const Main = () => {
     const animate = function () {
         setTimeout(() => requestAnimationFrame(animate), 1000 / 60)
 
+        console.log(snake.position)
+
         if (keypressed['d']) {
             snake.position.x += snake_speed
         }
@@ -175,7 +177,7 @@ const Main = () => {
                 <div>
                     <p style={{ fontSize: '1rem', color: '#cccccc' }}>Created by Khazem Khaled</p>
                 </div>
-                <div style={{ background: '#eeeeee', marginTop: '1rem', textAlign: 'center', paddingTop: '0.6rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
+                <div style={{ background: 'rgb(255, 255, 255, 0.5)', marginTop: '1rem', textAlign: 'center', paddingTop: '0.6rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
                     <p className='mx-auto' style={{ fontSize: '1rem', color: '#222222' }}>
                         How to play
                     </p>
