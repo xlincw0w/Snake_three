@@ -1,17 +1,15 @@
-FROM node:15.3.0
+FROM node:20 as build
 
 WORKDIR /app
 
-COPY ./public ./public
-COPY .babelrc .babelrc
-COPY server.js server.js
-COPY package.json package.json
-COPY webpack.dev.js webpack.dev.js
-COPY webpack.prod.js webpack.prod.js
-COPY tailwind.config.js tailwind.config.js
-COPY tsconfig.json tsconfig.json
-COPY postcss.config.js postcss.config.js
+COPY ./package.json ./package.json
 
-RUN yarn
+RUN yarn install
 
-CMD ["/bin/bash"]
+COPY . .
+
+RUN yarn build
+
+FROM nginx
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
