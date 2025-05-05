@@ -11,8 +11,8 @@ jobs:
           name: Build and push image
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker build -t $IMAGE_NAME:$SHORT_SHA .
-            docker push $IMAGE_NAME:$SHORT_SHA
+            docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$CIRCLE_SHA1 .
+            docker push $DOCKER_USERNAME/$IMAGE_NAME:$CIRCLE_SHA1
 
 workflows:
   build:
