@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "snake_three",
     "scripts": {
-        "start": "tailwind build ./public/index.css -o ./src/Tailwind/index.css && webpack serve --config webpack.dev.js ",
+        "start": "tailwind build ./public/index.css -o ./src/Tailwind/index.css && webpack serve --config webpack.dev.js",
         "build": "rm -rf dist && tailwind build ./public/index.css -o ./src/Tailwind/index.css && webpack --config webpack.prod.js",
         "test": "jest --watch /tests",
         "server": "rm -rf dist && webpack --config webpack.prod.js && node server.js"
